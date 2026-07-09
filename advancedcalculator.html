@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rice Calc</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --panel-bg: #09090b;
+            --border-color: #27272a;
+            --border-focus: #52525b;
+            --text-main: #f4f4f5;
+            --text-muted: #71717a;
+            --accent-val: #ffffff; 
+            --err-color: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            padding: 30px;
+            margin: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #terminal-box {
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            border-radius: 8px;
+            padding: 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1400px; 
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        #terminal-box:focus-within {
+            border-color: var(--border-focus);
+        }
+
+        #output {
+            height: 480px; 
+            overflow-y: auto;
+            margin-bottom: 25px;
+            white-space: pre-wrap;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #e4e4e7;
+        }
+
+        .input-bar-container {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            background: #040405;
+            padding: 14px 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .prompt {
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-right: 14px;
+            user-select: none;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 15px;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        /* Modern Dropdown Style */
+        .eq-select {
+            background: #040405;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: inherit;
+            padding: 14px 16px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 240px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .eq-select:focus {
+            border-color: var(--border-focus);
+        }
+
+        .res-val { 
+            color: var(--accent-val); 
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        
+        .sys-msg {
+            color: var(--text-muted);
+        }
+        
+        /* UI Elements */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 18px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .info-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: inherit;
+            padding: 6px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .info-btn:hover {
+            background: #18181b;
+            border-color: var(--border-focus);
+        }
+        
+        /* Instructions Panel */
+        #help-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, margin 0.3s ease, border-color 0.3s ease;
+            background: #040405;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            margin-bottom: 0;
+        }
+
+        #help-panel.open {
+            max-height: 400px;
+            margin-bottom: 25px;
+            border-color: var(--border-color);
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            font-size: 13px;
+            color: #a1a1aa;
+            line-height: 1.6;
+        }
+
+        .panel-section-title {
+            color: var(--text-main);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Footer Credit */
+        .credit {
+            margin-top: 25px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .credit a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .credit a:hover {
+            color: var(--text-main);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="terminal-box">
+    <div class="top-bar">
+        <div class="title">Rice Calc</div>
+        <button class="info-btn" onclick="toggleHelp()">Help & Commands</button>
+    </div>
+
+    <div id="help-panel">
+        <div class="panel-grid">
+            <div>
+                <div class="panel-section-title">Algebra & Basics</div>
+                • <span class="sys-msg">algebra [quad] [a] [b] [c]</span> &rarr; <span class="res-val">algebra quad 1 -5 6</span><br>
+                • <span class="sys-msg">algebra [heron] [a] [b] [c]</span> &rarr; <span class="res-val">algebra heron 3 4 5</span>
+            </div>
+            <div>
+                <div class="panel-section-title">Calculus & Geometry</div>
+                • <span class="sys-msg">calc [deriv] [x^2|x^3] [x_val]</span> &rarr; <span class="res-val">calc deriv x^3 3</span><br>
+                • <span class="sys-msg">calc [integ] [x^2|x^3] [a] [b]</span> &rarr; <span class="res-val">calc integ x^2 0 3</span><br>
+                • <span class="sys-msg">geom [circle] [radius]</span> &rarr; <span class="res-val">geom circle 5</span>
+            </div>
+            <div>
+                <div class="panel-section-title">Matrices & Stats</div>
+                • <span class="sys-msg">matrix [det2] [a,b,c,d]</span> &rarr; <span class="res-val">matrix det2 1,2,3,4</span><br>
+                • <span class="sys-msg">stats [mean|median] [csv]</span> &rarr; <span class="res-val">stats mean 2,4,6,8</span>
+            </div>
+            <div>
+                <div class="panel-section-title">Physics Operations</div>
+                • <span class="sys-msg">phys [force|energy] [args]</span> &rarr; <span class="res-val">phys force 10 9.8</span><br>
+                • <span class="sys-msg">phys [gravity] [m1] [m2] [r]</span> &rarr; <span class="res-val">phys gravity 5.97e24 7.34e22 384400000</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="output"><span class="sys-msg">// Calculator ready.
+// Type a command below, click "Help & Commands", or choose an option from the equations list.</span>
+
+</div>
+    
+    <div class="input-bar-container">
+        <div class="input-line">
+            <span class="prompt">&gt;</span>
+            <input type="text" id="cmd-input" placeholder="Enter a command or equation..." autofocus autocomplete="off">
+        </div>
+
+        <select id="eq-dropdown" class="eq-select" onchange="populateEquation()">
+            <option value="" disabled selected>Select an Equation...</option>
+            <optgroup label="Algebra & Basics">
+                <option value="algebra quad 1 -5 6">Quadratic Formula (quad)</option>
+                <option value="algebra heron 3 4 5">Heron's Formula Triangle Area (heron)</option>
+            </optgroup>
+            <optgroup label="Calculus & Geometry">
+                <option value="calc deriv x^3 3">Derivative (deriv)</option>
+                <option value="calc integ x^2 0 3">Definite Integral (integ)</option>
+                <option value="geom circle 5">Circle Properties (circle)</option>
+            </optgroup>
+            <optgroup label="Matrices & Statistics">
+                <option value="matrix det2 1,2,3,4">2x2 Matrix Determinant (det2)</option>
+                <option value="stats mean 2,4,6,8">Calculate Mean (mean)</option>
+                <option value="stats median 2,4,6,8">Calculate Median (median)</option>
+            </optgroup>
+            <optgroup label="Physics">
+                <option value="phys force 10 9.8">Newtonian Force (force)</option>
+                <option value="phys energy 10 5">Kinetic Energy (energy)</option>
+                <option value="phys gravity 5.97e24 7.34e22 384400000">Universal Gravitation (gravity)</option>
+            </optgroup>
+            <optgroup label="Trigonometry">
+                <option value="trig sin 45">Sine (sin)</option>
+                <option value="trig cos 45">Cosine (cos)</option>
+                <option value="trig tan 45">Tangent (tan)</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="credit">
+        <a href="https://github.com/0tianxu" target="_blank">@0tianxu</a>
+    </div>
+</div>
+
+<script>
+    const outputDiv = document.getElementById('output');
+    const inputEl = document.getElementById('cmd-input');
+    const helpPanel = document.getElementById('help-panel');
+    const dropdownEl = document.getElementById('eq-dropdown');
+
+    function toggleHelp() {
+        helpPanel.classList.toggle('open');
+    }
+
+    function populateEquation() {
+        if(dropdownEl.value) {
+            inputEl.value = dropdownEl.value;
+            inputEl.focus();
+            // Reset dropdown option back to placeholder style
+            dropdownEl.selectedIndex = 0;
+        }
+    }
+
+    const modules = {
+        help: () => `<span class="sys-msg">// Opening command list...</span>`,
+        
+        trig: (args) => {
+            let [func, deg] = args;
+            if (!func || !deg) return "Error: Invalid parameters. Expected format: trig [sin|cos|tan] [deg]";
+            let rad = (parseFloat(deg) * Math.PI) / 180;
+            let res = Math[func](rad);
+            return `Result: ${func}(${deg}°) = <span class="res-val">${res.toFixed(6)}</span>`;
+        },
+
+        stats: (args) => {
+            let func = args[0];
+            if (!args[1]) return "Error: Missing numbers dataset.";
+            let nums = args[1].split(',').map(Number);
+            if (nums.some(isNaN)) return "Error: Dataset contains invalid numbers.";
+            
+            if (func === 'mean') {
+                let sum = nums.reduce((a, b) => a + b, 0);
+                return `Result: mean = <span class="res-val">${sum / nums.length}</span>`;
+            } else if (func === 'median') {
+                nums.sort((a, b) => a - b);
+                let mid = Math.floor(nums.length / 2);
+                let med = nums.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+                return `Result: median = <span class="res-val">${med}</span>`;
+            }
+            return "Error: Unknown statistics method.";
+        },
+
+        calc: (args) => {
+            let [type, expr, val1, val2] = args;
+            if (type === 'deriv') {
+                let x = parseFloat(val1);
+                if (isNaN(x)) return "Error: Invalid point given for derivative.";
+                let h = 0.00001;
+                let f = (val) => expr === 'x^3' ? Math.pow(val, 3) : Math.pow(val, 2); 
+                let derivative = (f(x + h) - f(x)) / h;
+                return `Result: d/dx of ${expr} at x=${x} ≈ <span class="res-val">${derivative.toFixed(4)}</span>`;
+            }
+            if (type === 'integ') {
+                let a = parseFloat(val1);
+                let b = parseFloat(val2);
+                if (isNaN(a) || isNaN(b)) return "Error: Limits of integration must be valid numbers.";
+                let f = (val) => expr === 'x^3' ? Math.pow(val, 3) : Math.pow(val, 2);
+                let n = 1000; 
+                let h = (b - a) / n;
+                let sum = f(a) + f(b);
+                for (let i = 1; i < n; i++) {
+                    sum += f(a + i * h) * (i % 2 === 0 ? 2 : 4);
+                }
+                let integral = (h / 3) * sum;
+                return `Result: Integral of ${expr} from ${a} to ${b} ≈ <span class="res-val">${integral.toFixed(4)}</span>`;
+            }
+            return "Error: Unsupported calculus operation.";
+        },
+
+        algebra: (args) => {
+            let [type, val1, val2, val3] = args;
+            if (type === 'quad') {
+                let a = parseFloat(val1), b = parseFloat(val2), c = parseFloat(val3);
+                if (isNaN(a) || isNaN(b) || isNaN(c)) return "Error: Coefficients must be numbers.";
+                if (a === 0) return "Error: Coefficient 'a' cannot be zero.";
+                let disc = b * b - 4 * a * c;
+                if (disc < 0) return `Result: Roots are complex numbers (Discriminant = ${disc})`;
+                let root1 = (-b + Math.sqrt(disc)) / (2 * a);
+                let root2 = (-b - Math.sqrt(disc)) / (2 * a);
+                return `Result: Roots found -> x1 = <span class="res-val">${root1.toFixed(4)}</span>, x2 = <span class="res-val">${root2.toFixed(4)}</span>`;
+            }
+            if (type === 'heron') {
+                let a = parseFloat(val1), b = parseFloat(val2), c = parseFloat(val3);
+                if (isNaN(a) || isNaN(b) || isNaN(c)) return "Error: Side lengths must be numbers.";
+                if (a <= 0 || b <= 0 || c <= 0 || (a + b <= c) || (a + c <= b) || (b + c <= a)) {
+                    return "Error: Invalid triangle side lengths (Triangle inequality violation).";
+                }
+                let s = (a + b + c) / 2;
+                let area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+                return `Result: Triangle Area = <span class="res-val">${area.toFixed(4)}</span>`;
+            }
+            return "Error: Unknown algebra method.";
+        },
+
+        geom: (args) => {
+            let [type, val1] = args;
+            if (type === 'circle') {
+                let r = parseFloat(val1);
+                if (isNaN(r) || r < 0) return "Error: Radius must be a positive number.";
+                let area = Math.PI * Math.pow(r, 2);
+                let circum = 2 * Math.PI * r;
+                return `Result: Circle (r=${r}) -> Area = <span class="res-val">${area.toFixed(4)}</span> | Circumference = <span class="res-val">${circum.toFixed(4)}</span>`;
+            }
+            return "Error: Unknown geometry operation.";
+        },
+
+        matrix: (args) => {
+            let [type, data] = args;
+            if (type === 'det2') {
+                if (!data) return "Error: Missing matrix data elements.";
+                let elements = data.split(',').map(Number);
+                if (elements.length !== 4 || elements.some(isNaN)) return "Error: Provide exactly 4 comma-separated elements (a,b,c,d).";
+                let det = (elements[0] * elements[3]) - (elements[1] * elements[2]);
+                return `Result: Determinant = <span class="res-val">${det}</span>`;
+            }
+            return "Error: Unknown matrix operation.";
+        },
+
+        phys: (args) => {
+            let [type, val1, val2, val3] = args;
+            if (type === 'force') return `Result: Force (F=ma) = <span class="res-val">${parseFloat(val1) * parseFloat(val2)} N</span>`;
+            if (type === 'energy') return `Result: Kinetic Energy = <span class="res-val">${0.5 * parseFloat(val1) * Math.pow(parseFloat(val2), 2)} J</span>`;
+            if (type === 'gravity') {
+                let m1 = parseFloat(val1), m2 = parseFloat(val2), r = parseFloat(val3);
+                if (isNaN(m1) || isNaN(m2) || isNaN(r)) return "Error: Mass and distance values must be valid numbers.";
+                const G = 6.6743e-11;
+                let force = G * ((m1 * m2) / Math.pow(r, 2));
+                return `Result: Gravitational Force = <span class="res-val">${force.toExponential(5)} N</span>`;
+            }
+            return "Error: Unknown physics operation.";
+        }
+    };
+
+    inputEl.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            let rawInput = inputEl.value.trim();
+            if (!rawInput) return;
+
+            let parts = rawInput.split(' ');
+            let mainCmd = parts[0].toLowerCase();
+            let args = parts.slice(1);
+
+            outputDiv.innerHTML += `<span class="prompt">&gt;</span> <span style="color: #ffffff;">${rawInput}</span>\n`;
+
+            if (mainCmd === 'help') {
+                toggleHelp();
+            }
+
+            if (modules[mainCmd]) {
+                try {
+                    outputDiv.innerHTML += modules[mainCmd](args) + "\n\n";
+                } catch(err) {
+                    outputDiv.innerHTML += `<span style="color: var(--err-color);">Error: [${err.message}]</span>\n\n`;
+                }
+            } else if (mainCmd !== 'help') {
+                outputDiv.innerHTML += `<span style="color: var(--err-color);">Command '${mainCmd}' not recognized.</span>\n\n`;
+            }
+
+            inputEl.value = '';
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+    });
+</script>
+</body>
+</html>
