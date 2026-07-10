@@ -1,2 +1,2 @@
-# HTML5-Web-Rtc-Apps
-Some cool web-rtc based apps that i made
+# local html apps
+some cool local apps intended for restricted computers
