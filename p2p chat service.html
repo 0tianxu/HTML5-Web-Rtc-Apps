@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instant Offline P2P Chat</title>
+    <title>tbyrwbt</title>
     <style>
-        /* Premium Glossy Theme Variables */
+        /* Fuckass Background */
         :root {
             --bg-color: #f5f7fa;
             --app-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 244, 248, 0.95));
@@ -60,7 +60,7 @@
         .theme-select, .sidebar-input { width: 100%; padding: 10px; border-radius: 8px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color); outline: none; font-size: 13px; font-weight: 500; box-sizing: border-box; transition: border 0.2s, box-shadow 0.2s; }
         .theme-select:focus, .sidebar-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
 
-        /* Slack-Style Channels Navigation */
+        /* Slack Stle UI */
         .channel-list { display: flex; flex-direction: column; gap: 2px; }
         .channel-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-muted); transition: all 0.15s ease; }
         .channel-item:hover { background: var(--channel-hover); color: var(--text-color); }
@@ -80,7 +80,7 @@
         .guide-box h4 { margin: 0 0 6px 0; font-weight: 600; font-size: 13px; color: var(--channel-active-text); }
         .guide-box ol { padding-left: 16px; margin: 0; }
 
-        /* Chat Pane elements */
+          /*Chat Pane elements */
         .main-chat-pane { flex-grow: 1; background: var(--chat-pane-bg); display: flex; flex-direction: column; }
         .chat-header { height: 48px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex-shrink: 0; background: var(--sidebar-bg); }
         .chat-header .title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 6px; color: var(--text-color); }
@@ -257,7 +257,7 @@
                 }
             }
         }
-
+/* penis penis */
         function switchChannel(idx) {
             activeChannelIndex = idx;
             
@@ -412,7 +412,8 @@
 
             if (el.value.trim() && dc?.readyState === 'open') {
                 const payload = { text: el.value, user: currentUsername };
-                
+                /* fuck off my scripts and just use my shit
+                if you're Phil then u chill*/
                 chatDatabase[activeChannelIndex].push({ text: el.value, user: currentUsername });
                 localStorage.setItem('p2p_chan_db_v3', JSON.stringify(chatDatabase));
                 
