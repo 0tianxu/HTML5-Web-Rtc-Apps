@@ -315,7 +315,7 @@
         if(dropdownEl.value) {
             inputEl.value = dropdownEl.value;
             inputEl.focus();
-            // Reset dropdown option back to placeholder style
+            // Reset dropdown option back to placeholder
             dropdownEl.selectedIndex = 0;
         }
     }
@@ -400,7 +400,7 @@
             }
             return "Error: Unknown algebra method.";
         },
-
+// 3====/>
         geom: (args) => {
             let [type, val1] = args;
             if (type === 'circle') {
@@ -439,7 +439,7 @@
             return "Error: Unknown physics operation.";
         }
     };
-
+//fuck off teach why u here
     inputEl.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             let rawInput = inputEl.value.trim();
